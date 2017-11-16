@@ -4,16 +4,16 @@ import Element from './elements.js';
 
 const EMPTY_STRING = '';
 
-const OPTION_TOOLTIP_TEXT = 'Log out';
-const NEW_CHAT_TOOLTIP_TEXT = 'New Message';
+const OPTION_TOOLTIP_TEXT = 'Se déconnecter';
+const NEW_CHAT_TOOLTIP_TEXT = 'Nouveau message';
 
-const TITLE_TOP_LOGIN = 'SendBird Widget';
-const TITLE_TOP_CHANNEL = 'Channel List';
-const TITLE_LOGIN_USER_ID = 'USER ID';
-const TITLE_LOGIN_NICKNAME = 'NICKNAME';
-const TITLE_LOGIN_BTN = 'Start Chat';
-const TITLE_EMPTY_ITEM = 'Click below to start';
-const TITLE_EMPTY_BTN = 'Create';
+const TITLE_TOP_LOGIN = 'Connexion à votre compte';
+const TITLE_TOP_CHANNEL = 'Liste des conversations';
+const TITLE_LOGIN_USER_ID = 'ID utilisateur';
+const TITLE_LOGIN_NICKNAME = 'Pseudo';
+const TITLE_LOGIN_BTN = 'Démarrer conversation';
+const TITLE_EMPTY_ITEM = 'Appuyer ci-dessous pour démarrer';
+const TITLE_EMPTY_BTN = 'Démarrer';
 
 const INPUT_TYPE = 'text';
 const INPUT_MAX_LENGTH = 20;

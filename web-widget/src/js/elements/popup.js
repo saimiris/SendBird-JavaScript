@@ -3,9 +3,9 @@ import Element from './elements.js';
 import { addClass, show, hide } from '../utils.js';
 
 const EMPTY_STRING = '';
-const TITLE_POPUP_MEMBER_LIST = 'Member List';
-const TITLE_POPUP_INVITE_LIST = 'Invite Members';
-const TITLE_POPUP_INVITE_BTN = 'Invite';
+const TITLE_POPUP_MEMBER_LIST = 'Liste des utilisateurs';
+const TITLE_POPUP_INVITE_LIST = 'Inviter un utilisateur';
+const TITLE_POPUP_INVITE_BTN = 'Inviter’;
 const MEMBER_POPUP_DEFAULT = -30;
 const INVITE_POPUP_DEFAULT = -3;
 const POPUP_DISTANCE = 300;

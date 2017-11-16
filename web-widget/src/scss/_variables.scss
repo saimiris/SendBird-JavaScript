@@ -1,9 +1,9 @@
 // Color
 $color-transparent:                   transparent !default;
 $color-white:                         #FFFFFF !default;
-$color-purple-light:                  #BDB0FF !default;
-$color-purple:                        #896BF5 !default;
-$color-purple-dark:                   #7b5fd9 !default;
+$color-purple-light:                  #89A9D8 !default;
+$color-purple:                        #396199 !default;
+$color-purple-dark:                   #00336C !default;
 $color-gray-lightest:                 #F3F5F7 !default;
 $color-gray-lighter:                  #D5D7D9 !default;
 $color-gray-light:                    #A5B3CD !default;
@@ -16,8 +16,8 @@ $color-content-text:                  #444444 !default;
 $color-read-receipt:                  #A08CFF !default;
 $color-text-download:                 #0081D6 !default;
 
-$color-widget-background:             $color-purple !default;
-$color-widget-background-hover:       #775AE0 !default;
+$color-widget-background:             #FFB400 !default;
+$color-widget-background-hover:       #FFB400 !default;
 
 $color-typing-spinner:                #A5B4CD !default;
 
@@ -30,7 +30,7 @@ $color-button-background-disabled:    #98DC99 !default;
 $color-unread-background:             #FB6094 !default;
 
 $color-list-top-background:           $color-purple !default;
-$color-list-top-border:               #795FDC !default;
+$color-list-top-border:               #F1F8FF !default;
 $color-list-top-title:                #EBE6FF !default;
 
 $color-login-title:                   #3A414D !default;
@@ -64,5 +64,5 @@ $font-weight-default: 400;
 $height-list-board-content: 426px;
 
 // Content
-$content-message-input-default: 'Type a Message';
+$content-message-input-default: 'Taper un message';
 $content-message-input-empty: '';

@@ -71,22 +71,30 @@
   }
 
   .ic-option {
+	visibility: hidden;
+/*
     @include reset();
     @include icon($icon-option);
     @include hover {
       @include icon($icon-option-hover);
     }
   }
+*/
   .ic-option.active {
+/*
     @include icon($icon-option-hover);
+*/
   }
 
   .ic-new-chat {
+	visibility: hidden;
+/*
     @include reset();
     @include icon($icon-new-chat);
     @include hover {
       @include icon($icon-new-chat-hover);
     }
+*/
   }
 
   .ic-close {
@@ -101,33 +109,46 @@
   }
 
   .ic-members {
+	visibility: hidden;
+/*
     @include reset();
     @include icon($icon-friend-list);
     @include hover {
       @include icon($icon-friend-list-hover);
     }
+*/
   }
   .ic-members.active {
+/*
     @include icon($icon-friend-list-selected);
+*/
   }
 
   .ic-invite {
+	visibility: hidden;
+/*
     @include reset();
     @include icon($icon-friend-add);
     @include hover {
       @include icon($icon-friend-add-hover);
     }
+*/
   }
   .ic-invite.active {
+/*
     @include icon($icon-friend-add-selected);
+*/
   }
 
   .ic-leave {
+	visibility: hidden;
+/*
     @include reset();
     @include icon($icon-leave-chat);
     @include hover {
       @include icon($icon-leave-chat-hover);
     }
+*/
   }
 
   // Tooltip
@@ -498,6 +519,8 @@
         }
 
         .empty-item {
+		visibility: hidden;
+/*
           @include reset();
           text-align: center;
           & > .title {
@@ -516,6 +539,7 @@
             line-height: 30px;
             padding: 0 16px;
           }
+*/
         }
       }
 
@@ -904,6 +928,8 @@
         }
 
         .file {
+	  display: none;
+/*
           @include reset();
           float: left;
           width: 22px;
@@ -918,8 +944,8 @@
             background-position: inherit;
             background-size: 14px 14px;
           }
+*/
         }
-
       }
     }
 
