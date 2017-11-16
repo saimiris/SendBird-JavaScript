@@ -6,26 +6,26 @@ const EMPTY_STRING = '';
 
 const CHAT_SECTION_RIGHT_MAX = '280px';
 const CHAT_SECTION_RIGHT_MIN = '60px';
-const TOOLTIP_MEMBER_LIST = 'Member List';
-const TOOLTIP_CHANNEL_LEAVE = 'Channel Leave';
-const TOOLTIP_INVITE_MEMBER = 'Invite Member';
-const TITLE_CHAT_TITLE_DEFAULT = 'Group Channel';
-const TITLE_CHAT_TITLE_NEW_CHAT = 'New Chat';
-const TITLE_CHAT_LEAVE_POPUP = 'Do you really want to leave?';
-const TITLE_CHAT_LEAVE_BTN = 'Leave';
-const TITLE_CHAT_CANCEL_BTN = 'Cancel';
+const TOOLTIP_MEMBER_LIST = 'Liste des utilisateurs';
+const TOOLTIP_CHANNEL_LEAVE = 'Quitter conversation';
+const TOOLTIP_INVITE_MEMBER = 'Inviter un utilisateur';
+const TITLE_CHAT_TITLE_DEFAULT = 'Listes des conversations';
+const TITLE_CHAT_TITLE_NEW_CHAT = 'Nouvelle conversation';
+const TITLE_CHAT_LEAVE_POPUP = 'Voulez-vous vraiment quitter la conversation ?';
+const TITLE_CHAT_LEAVE_BTN = 'Quitter';
+const TITLE_CHAT_CANCEL_BTN = 'Annuler';
 const MEMBER_COUNT_DEFAULT = '0';
 const MARGIN_TOP_MESSAGE = '3px';
 const MESSAGE_NONE_IMAGE_HEIGHT = '10px';
 const DISPLAY_NONE = 'none';
-const TITLE_START_CHAT_BTN = 'Start Chat';
+const TITLE_START_CHAT_BTN = 'Démarrer conversation';
 const MESSAGE_CONTENT_HEIGHT_DEFAULT = 328;
 const MESSAGE_INPUT_HEIGHT_DEFAULT = 29;
-const MESSAGE_TYPING_SEVERAL = 'Several people are typing...';
-const MESSAGE_TYPING_MEMBER = ' is typing...';
+const MESSAGE_TYPING_SEVERAL = 'Plusieurs personnes sont en train de taper ...';
+const MESSAGE_TYPING_MEMBER = ' est en train de taper ...';
 const DISPLAY_TYPE_INLINE_BLOCK = 'inline-block';
 const IMAGE_MAX_SIZE = 160;
-const TEXT_FILE_DOWNLOAD = 'Download';
+const TEXT_FILE_DOWNLOAD = 'Télécharger';
 
 class ChatSection extends Element {
   constructor(widget) {
