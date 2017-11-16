@@ -1,6 +1,6 @@
 import Element from './element.js';
 import { EMPTY_STRING, KEY_CODE } from '../consts.js';
-import { hasClass, addClass, removeClass, getPaddingTop, getFullHeight } from '../utils.js';
+import { hasClass, addClass, removeClass, getPaddingTop, getFullHeight, xssEscape } from '../utils.js';
 
 const MESSAGE_PREFIX = ' : ';
 const LAST_MESSAGE_YESTERDAY = 'YESTERDAY';
@@ -172,6 +172,7 @@ class MessageBoard extends Element{
   _createMessageItem(message) {
     let item = this._createDiv();
     this._setClass(item, [this.classes.MESSAGE_ITEM]);
+    item.setAttribute('id', message.messageId);
 
     let text = this._createDiv();
     this._setClass(text, [this.classes.MESSAGE_TEXT]);
@@ -184,10 +185,10 @@ class MessageBoard extends Element{
       this.senderColor[message.sender.userId] = nicknameColor;
     }
     this._setClass(nickname, [this.classes.NICKNAME, this.classes.NICKNAME_COLOR + nicknameColor]);
-    this._setContent(nickname, message.sender.nickname);
+    this._setContent(nickname, xssEscape(message.sender.nickname));
 
     text.appendChild(nickname);
-    this._addContent(text, MESSAGE_PREFIX + message.message);
+    this._addContent(text, MESSAGE_PREFIX + xssEscape(message.message));
 
     item.appendChild(text);
 

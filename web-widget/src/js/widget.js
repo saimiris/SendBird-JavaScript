@@ -4,7 +4,23 @@ import ChatSection from './elements/chat-section.js';
 import Popup from './elements/popup.js';
 import Spinner from './elements/spinner.js';
 import Sendbird from './sendbird.js';
-import { hide, show, addClass, removeClass, hasClass, getFullHeight, insertMessageInList, getLastItem, isEmptyString } from './utils.js';
+import { 
+  hide, 
+  show, 
+  addClass, 
+  removeClass, 
+  hasClass, 
+  getFullHeight, 
+  insertMessageInList, 
+  getLastItem, 
+  isEmptyString, 
+  xssEscape, 
+  createNotificationSound,
+  requestNotification,
+  setCookie,
+  getCookie,
+  deleteCookie 
+} from './utils.js';
 import { className, TYPE_STRING, MAX_COUNT } from './consts.js';
 
 const WIDGET_ID = 'sb_widget';
@@ -36,7 +52,7 @@ class SBWidget {
     this.widget = document.getElementById(WIDGET_ID);
     if (this.widget) {
       document.addEventListener(EVENT_TYPE_CLICK, (event) => {
-        this._initClickEvent(event)
+        this._initClickEvent(event);
       });
       this._init();
       this._start(appId);
@@ -54,7 +70,7 @@ class SBWidget {
     this.widget = document.getElementById(WIDGET_ID);
     if (this.widget) {
       document.addEventListener(EVENT_TYPE_CLICK, (event) => {
-        this._initClickEvent(event)
+        this._initClickEvent(event);
       });
       this._init();
       this._start(appId);
@@ -106,6 +122,9 @@ class SBWidget {
         return this.type == TIME_MESSAGE_TYPE;
       }
     };
+
+    requestNotification();
+    this.notificationSound = createNotificationSound();
   }
 
   _getGoogleFont() {
@@ -135,8 +154,9 @@ class SBWidget {
     this.widgetBtn.reset();
   }
 
-  responsiveChatSection(channelUrl) {
-    let maxSize = parseInt(this.chatSection.self.offsetWidth / CHAT_BOARD_WIDTH);
+  responsiveChatSection(channelUrl, isShow) {
+    let _bodyWidth = document.getElementsByTagName('BODY')[0].offsetWidth - 360;
+    let maxSize = parseInt(_bodyWidth / CHAT_BOARD_WIDTH);
     let currentSize = this.activeChannelSetList.length;
     if (currentSize >= maxSize) {
       let extraChannelSet = getLastItem(this.activeChannelSetList);
@@ -156,10 +176,17 @@ class SBWidget {
           this.extraChannelSetList.splice(idx, 1);
         }
       }
+      this.chatSection.setWidth(maxSize * CHAT_BOARD_WIDTH);
     } else {
       let popChannelUrl = this.extraChannelSetList.pop();
       if (popChannelUrl) {
         this._connectChannel(popChannelUrl, true);
+        this.chatSection.setWidth((currentSize + 1) * CHAT_BOARD_WIDTH);
+      } else {
+        if (isShow) {
+          currentSize += 1;
+        }
+        this.chatSection.setWidth(currentSize * CHAT_BOARD_WIDTH);
       }
     }
   }
@@ -184,7 +211,7 @@ class SBWidget {
       this.listBoard.hideLogoutBtn();
 
       var chatBoard = this.chatSection.createChatBoard(NEW_CHAT_BOARD_ID);
-      this.responsiveChatSection();
+      this.responsiveChatSection(null, true);
 
       this.chatSection.createNewChatBoard(chatBoard);
       this.chatSection.addClickEvent(chatBoard.startBtn, () => {
@@ -226,6 +253,7 @@ class SBWidget {
 
     this.listBoard.addLogoutClickEvent(() => {
       this.sb.disconnect(() => {
+        deleteCookie();
         this.sb.reset();
         this.toggleBoard(false);
         this.widgetBtn.toggleIcon(false);
@@ -243,6 +271,7 @@ class SBWidget {
         this.listBoard.nickname.disabled = true;
 
         this._connect(this.listBoard.getUserId(), this.listBoard.getNickname());
+        setCookie(this.listBoard.getUserId(), this.listBoard.getNickname());
       }
     });
     this.listBoard.addKeyDownEvent(this.listBoard.nickname, (event) => {
@@ -250,6 +279,14 @@ class SBWidget {
         this.listBoard.btnLogin.click();
       }
     });
+
+    const cookie = getCookie();
+    if (cookie.userId) {
+      this._connect(cookie.userId, cookie.nickname);
+      this.listBoard.showChannelList();
+      this.toggleBoard(true);
+      this.chatSection.responsiveSize(false, this.responsiveChatSection.bind(this));
+    }
   }
 
   _connect(userId, nickname, callback) {
@@ -263,6 +300,12 @@ class SBWidget {
       this.sb.createHandlerGlobal(
         (channel, message) => {
           this.messageReceivedAction(channel, message);
+        },
+        (channel, message) => {
+          this.messageUpdatedAction(channel, message);
+        },
+        (channel, messageId) => {
+          this.messageDeletedAction(channel, messageId);
         },
         (channel) => {
           this.updateUnreadMessageCount(channel);
@@ -322,10 +365,8 @@ class SBWidget {
     }
     this.listBoard.addListOnFirstIndex(target);
 
-    if (message.isUserMessage() || message.isFileMessage()) {
-      this.listBoard.setChannelLastMessage(channel.url, message.isUserMessage() ? message.message : message.name);
-      this.listBoard.setChannelLastMessageTime(channel.url, this.sb.getMessageTime(message));
-    }
+    this.listBoard.setChannelLastMessage(channel.url, message.isFileMessage() ? xssEscape(message.name) : xssEscape(message.message));
+    this.listBoard.setChannelLastMessageTime(channel.url, this.sb.getMessageTime(message));
 
     let targetBoard = this.chatSection.getChatBoard(channel.url);
     if (targetBoard) {
@@ -336,6 +377,78 @@ class SBWidget {
       this.setMessageItem(channelSet.channel, targetBoard, [message], false, isBottom, lastMessage);
       channel.markAsRead();
       this.updateUnreadMessageCount(channel);
+    } 
+    if (!targetBoard) {
+      if ('Notification' in window) {
+        var notification = new Notification(
+          "New Message", 
+          {
+            "body": message.isFileMessage() ? message.name : message.message, 
+            "icon": "http://qnimate.com/wp-content/uploads/2014/07/web-notification-api-300x150.jpg"
+          }
+        );
+        notification.onclick = function() {
+          window.focus();
+        }
+        this.notificationSound.play();
+      }
+    }
+  }
+
+  messageUpdatedAction(channel, message) {
+    let targetBoard = this.chatSection.getChatBoard(channel.url);
+    if (targetBoard) {
+      let channelSet = this.getChannelSet(channel.url);
+      let newMessages = channelSet.message.map((msg) => {
+        if (msg.messageId === message.messageId) {
+          return message
+        } else {
+          return msg
+        }
+      });
+      channelSet.message = newMessages;
+
+      let lastMessage = getLastItem(channelSet.message);
+      if (lastMessage.messageId === message.messageId) {
+        let target = this.listBoard.getChannelItem(channel.url);
+        if (!target) {
+          target = this.createChannelItem(channel);
+          this.listBoard.checkEmptyList();
+        }
+        this.listBoard.addListOnFirstIndex(target);
+        this.listBoard.setChannelLastMessage(channel.url, message.isFileMessage() ? xssEscape(message.name) : xssEscape(message.message));
+      }
+      let updatedMessage = document.getElementById(`${message.messageId}`).querySelector('div>div>div.text');
+      if (updatedMessage) {
+        updatedMessage.innerHTML = message.message;
+      }
+    }
+  }
+
+  messageDeletedAction(channel, messageId) {
+    let targetBoard = this.chatSection.getChatBoard(channel.url);
+    if (targetBoard) {
+      let channelSet = this.getChannelSet(channel.url);
+      let lastMessage = getLastItem(channelSet.message);
+      if (lastMessage.messageId.toString() === messageId.toString()) {
+        channelSet.message.pop();
+        lastMessage = getLastItem(channelSet.message);
+        let target = this.listBoard.getChannelItem(channel.url);
+        if (!target) {
+          target = this.createChannelItem(channel);
+          this.listBoard.checkEmptyList();
+        }
+        this.listBoard.addListOnFirstIndex(target);
+        this.listBoard.setChannelLastMessage(channel.url, lastMessage.isFileMessage() ? xssEscape(lastMessage.name) : xssEscape(lastMessage.message));
+      } else {
+        let newMessages = channelSet.message.filter((msg) => {
+          return msg.messageId.toString() !== messageId.toString()
+        });
+        channelSet.message = newMessages;
+      }
+      
+      let updatedMessage = document.getElementById(`${messageId}`)
+      updatedMessage.remove();
     }
   }
 
@@ -425,7 +538,7 @@ class SBWidget {
   _connectChannel(channelUrl, doNotCall) {
     var chatBoard = this.chatSection.createChatBoard(channelUrl, doNotCall);
     if (!doNotCall) {
-      this.responsiveChatSection(channelUrl);
+      this.responsiveChatSection(channelUrl, true);
     }
     this.chatSection.addClickEvent(chatBoard.closeBtn, () => {
       this.chatSection.closeChatBoard(chatBoard);
@@ -620,6 +733,11 @@ class SBWidget {
             if (isBottom) {
               this.chatSection.scrollToBottom(target.messageContent);
             }
+          } else {
+            let textMessage = target.input.textContent || this.chatSection.textKr;
+            if (textMessage.length === 0) {
+              channelSet.channel.endTyping();
+            }
           }
         });
         this.chatSection.addPasteEvent(target.input, (event) => {
@@ -656,15 +774,18 @@ class SBWidget {
         newMessage = this.chatSection.createMessageItemTime(message.time);
         prevMessage = null;
       } else {
-        let isCurrentUser = this.sb.isCurrentUser(message.sender);
-        let isContinue = prevMessage ? (message.sender.userId == prevMessage.sender.userId) : false;
-        let unreadCount = channel.getReadReceipt(message);
-        if (message.isUserMessage()) {
-          newMessage = this.chatSection.createMessageItem(message, isCurrentUser, isContinue, unreadCount);
-        } else if (message.isFileMessage()) {
-          newMessage = this.chatSection.createMessageItem(message, isCurrentUser, isContinue, unreadCount);
-        } else {
-          // do something...
+        let isContinue = false;
+        if (message.isAdminMessage()) {
+          newMessage = this.chatSection.createAdminMessageItem(message);
+        } else { // isUserMessage() || isFileMessage()
+          isContinue = (prevMessage && prevMessage.sender) ? (message.sender.userId == prevMessage.sender.userId) : false;
+          let isCurrentUser = this.sb.isCurrentUser(message.sender);
+          let unreadCount = channel.getReadReceipt(message);
+          if (message.isUserMessage()) {
+            newMessage = this.chatSection.createMessageItem(message, isCurrentUser, isContinue, unreadCount);
+          } else if (message.isFileMessage()) {
+            newMessage = this.chatSection.createMessageItem(message, isCurrentUser, isContinue, unreadCount);
+          }
         }
         prevMessage = message;
       }

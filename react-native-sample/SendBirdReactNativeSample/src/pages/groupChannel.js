@@ -9,6 +9,7 @@ import {
   StyleSheet
 } from 'react-native'
 
+import { CachedImage } from 'react-native-cached-image';
 import {APP_ID, PULLDOWN_DISTANCE} from '../consts';
 import TopBar from '../components/topBar';
 import moment from 'moment';
@@ -129,7 +130,7 @@ export default class GroupChannel extends Component {
         ]
       )
     } else {
-      _SELF.props.navigator.push({name: 'chat', channel: channel, _onHideChannel: this._onHideChannel, refresh: this._refreshChannelList});
+      _SELF.props.navigator.push({name: 'chat', channel: channel, _onHideChannel: _SELF._onHideChannel, refresh: _SELF._refreshChannelList});
     }
   }
 
@@ -152,7 +153,6 @@ export default class GroupChannel extends Component {
         return;
       }
       _SELF.setState({ listQuery: listQuery, channelList: channelList, dataSource: ds.cloneWithRows(channelList)});
-
     });
   }
 
@@ -194,7 +194,7 @@ export default class GroupChannel extends Component {
             _SELF.setState({editMode: true});
           }},
           {text: 'Create', onPress: () => {
-            _SELF.props.navigator.push({name: 'inviteUser', refresh: _SELF._refreshChannelList});
+            _SELF.props.navigator.push({name: 'inviteUser', _onHideChannel: _SELF._onHideChannel, refresh: _SELF._refreshChannelList, });
           }},
           {text: 'Cancel'}
         ]
@@ -213,6 +213,7 @@ export default class GroupChannel extends Component {
 
         <View style={styles.listContainer}>
           <ListView
+            removeClippedSubviews={false}
             enableEmptySections={true}
             onEndReached={() => this._getChannelList()}
             onEndReachedThreshold={PULLDOWN_DISTANCE}
@@ -221,7 +222,7 @@ export default class GroupChannel extends Component {
               <TouchableHighlight onPress={() => this._onChannelPress(rowData)}>
                 <View style={styles.listItem}>
                   <View style={styles.listIcon}>
-                    <Image style={styles.channelIcon} source={{uri: rowData.coverUrl.replace('http://', 'https://')}} />
+                    <CachedImage style={styles.channelIcon} key={rowData.coverUrl} source={{uri: rowData.coverUrl.replace('http://', 'https://')}} />
                   </View>
                   <View style={styles.listInfo}>
                     <Text style={styles.titleLabel}>{this._channelTitle(rowData.members)}</Text>

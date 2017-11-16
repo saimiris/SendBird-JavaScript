@@ -38,6 +38,10 @@ export const className = {
   MESSAGE_LIST: 'message-list',
   TYPING: 'typing',
   TEXT: 'text',
+  PREVIEW_NAME: 'preview-name',
+  PREVIEW_TITLE: 'preview-title',
+  PREVIEW_DESCRIPTION: 'preview-description',
+  PREVIEW_IMAGE: 'preview-iamge',
   FILE_MESSAGE: 'file-message',
   FILE: 'file',
   FILE_ICON: 'file-icon',
@@ -55,6 +59,7 @@ export const className = {
   LEAVE_POPUP: 'leave-popup',
   LEAVE_BTN: 'leave-btn',
   CANCEL_BTN: 'cancel-btn',
+  ADMIN_MESSAGE: 'admin-message',
 
   POPUP: 'popup',
   MEMBERS: 'members',
@@ -90,6 +95,6 @@ export const styleValue = {
 };
 
 export const MAX_COUNT = '+9';
-export const MAX_FONT_ZISE = '11';
+export const MAX_FONT_SIZE = '11';
 
 export const TYPE_STRING = 'string';

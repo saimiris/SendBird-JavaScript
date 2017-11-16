@@ -1,4 +1,5 @@
 import { MAX_COUNT } from './consts.js';
+import { xssEscape } from './utils.js';
 
 const GLOBAL_HANDLER = 'GLOBAL_HANDLER';
 const GET_MESSAGE_LIMIT = 20;
@@ -143,10 +144,7 @@ class Sendbird {
   }
 
   sendFileMessage(channel, file, action) {
-    let thumbSize = [];
-    if (file.type.match(/^image\/.+$/)) {
-      thumbSize = [{'maxWidth': 160, 'maxHeight': 160}];
-    }
+    let thumbSize = [{'maxWidth': 160, 'maxHeight': 160}];
     channel.sendFileMessage(file, '', '', thumbSize, (message, error) => {
       if (error) {
         console.error(error);
@@ -179,15 +177,23 @@ class Sendbird {
    */
   createHandlerGlobal(...args) {
     let messageReceivedFunc = args[0];
-    let ChannelChangedFunc = args[1];
-    let typingStatusFunc = args[2];
-    let readReceiptFunc = args[3];
-    let userLeftFunc = args[4];
-    let userJoinFunc = args[5];
+    let messageUpdatedFunc = args[1];
+    let messageDeletedFunc = args[2];
+    let ChannelChangedFunc = args[3];
+    let typingStatusFunc = args[4];
+    let readReceiptFunc = args[5];
+    let userLeftFunc = args[6];
+    let userJoinFunc = args[7];
 
     let channelHandler = new this.sb.ChannelHandler();
     channelHandler.onMessageReceived = function(channel, message) {
       messageReceivedFunc(channel, message);
+    };
+    channelHandler.onMessageUpdated = function (channel, message) {
+      messageUpdatedFunc(channel, message);
+    };
+    channelHandler.onMessageDeleted = function (channel, messageId) {
+      messageDeletedFunc(channel, messageId);
     };
     channelHandler.onChannelChanged = function(channel) {
       ChannelChangedFunc(channel);
@@ -215,7 +221,7 @@ class Sendbird {
     let currentUserId = this.sb.currentUser.userId;
     channel.members.forEach(function(member) {
       if (member.userId != currentUserId) {
-        nicknameList.push(member.nickname);
+        nicknameList.push(xssEscape(member.nickname));
       }
     });
     return nicknameList.toString();
@@ -227,7 +233,8 @@ class Sendbird {
 
   getLastMessage(channel) {
     if (channel.lastMessage) {
-      return channel.lastMessage.isUserMessage() ? channel.lastMessage.message : channel.lastMessage.name;
+      return channel.lastMessage.isUserMessage() || channel.lastMessage.isAdminMessage() 
+      ? channel.lastMessage.message : channel.lastMessage.name;
     }
     return '';
   }
