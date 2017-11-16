@@ -110,7 +110,8 @@ export function createNotificationSound() {
   var sound = document.createElement('audio');
   sound.style.display = 'none';
   sound.id = 'notifierSound';
-  sound.src = 'https://dxstmhyqfqr1o.cloudfront.net/sound/SendBird-default.mp3';
+//  sound.src = 'https://dxstmhyqfqr1o.cloudfront.net/sound/SendBird-default.mp3';
+  sound.src = 'https://www.profexpress.com/mp3/new_inquiry.mp3';
   return sound;
 }
 
