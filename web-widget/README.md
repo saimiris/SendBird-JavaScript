@@ -42,6 +42,10 @@ If you wish to issue an `access_token` for your user, modify the `connect functi
 
         npm start
 
+(4. Build)
+
+	webpack -p
+
 
 ## Advanced  
 ### Connect other APP or Channel  
