@@ -141,14 +141,11 @@
   }
 
   .ic-leave {
-	visibility: hidden;
-/*
     @include reset();
     @include icon($icon-leave-chat);
     @include hover {
       @include icon($icon-leave-chat-hover);
     }
-*/
   }
 
   // Tooltip
