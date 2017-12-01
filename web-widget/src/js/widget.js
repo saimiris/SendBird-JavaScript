@@ -379,6 +379,7 @@ class SBWidget {
       this.updateUnreadMessageCount(channel);
     } 
     if (!targetBoard) {
+      /*
       if ('Notification' in window) {
         var notification = new Notification(
           "New Message", 
@@ -392,6 +393,8 @@ class SBWidget {
         }
         this.notificationSound.play();
       }
+      */
+      this.notificationSound.play();
     }
   }
 
